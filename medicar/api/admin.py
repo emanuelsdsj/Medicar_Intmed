@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import Especialidade, Medico, Agenda, Consulta
 
-# Register your models here.
+admin.site.register(Especialidade)
+admin.site.register(Medico)
+admin.site.register(Agenda)
+admin.site.register(Consulta)
