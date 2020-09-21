@@ -13,5 +13,6 @@ router.register(r'consultas', AppointmentViewSet, basename="consultas")
 
 urlpatterns = [
     urls.path('', urls.include(router.urls)),
+    urls.path('{consulta_id}', urls.include(router.urls)),
     urls.path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
 ]

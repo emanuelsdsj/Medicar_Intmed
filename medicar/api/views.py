@@ -106,3 +106,19 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             appointment_serialized = self.serializer_class(appointment_serialized.save())
         return JsonResponse(appointment_serialized.data, safe=False)
 
+    def destroy(self, request, pk):
+        today = datetime.now()
+        appointment = Consulta.objects.filter(id=pk, usuario=request.user.id, 
+                                              horario__gte=today.time(), 
+                                              agenda__dia__gte=today.date()).first()
+        if not appointment:
+            return JsonResponse({
+                "Status": "Failed",
+                "Error": "A consulta não foi encontrada"}, 
+                status=status.HTTP_404_NOT_FOUND, safe=False
+            )
+        agenda = Agenda.objects.filter(id=appointment.agenda.id, dia__gte=today.date()).first()
+        agenda.horarios.append(appointment.horario)
+        agenda.save()
+        appointment.delete()
+        return JsonResponse("", safe=False)

@@ -23,7 +23,7 @@ class Medico(models.Model):
 
 
 class Agenda(models.Model):
-    medico = models.ForeignKey(Medico, on_delete=models.CASCADE)
+    medico = models.ForeignKey(Medico, on_delete=models.CASCADE, null=False, blank=False)
     dia = models.DateField(null=False, blank=False, 
                            validators=[validate_past_date])
     horarios = ArrayField(models.TimeField(blank=False, null=False), 
