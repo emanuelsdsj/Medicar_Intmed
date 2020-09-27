@@ -2,7 +2,15 @@ from django import urls
 from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
 
-from .views import SpecialtyViewSet, MedicViewSet, AgendaViewSet, AppointmentViewSet
+from .views import (
+    SpecialtyViewSet, 
+    MedicViewSet, 
+    AgendaViewSet, 
+    AppointmentViewSet,
+    signup,
+    signin,
+    signout
+)
 
 
 router = routers.DefaultRouter()
@@ -15,4 +23,7 @@ urlpatterns = [
     urls.path('', urls.include(router.urls)),
     urls.path('{consulta_id}', urls.include(router.urls)),
     urls.path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    urls.path('signup/', signup, name='signup'),
+    urls.path('signin/', signin, name='signin'),
+    urls.path('signout/', signout, name='signout'),
 ]

@@ -1,4 +1,5 @@
 import json
+import requests
 
 from datetime import datetime
 from django.http.response import JsonResponse
@@ -6,6 +7,10 @@ from rest_framework import viewsets, status
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated 
 from django.core import serializers
+from django.contrib.auth.models import User
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Especialidade, Medico, Agenda, Consulta
 from .serializers import (
@@ -51,7 +56,7 @@ class AgendaViewSet(viewsets.ModelViewSet):
     def list(self, request):
         today = datetime.now()
         agendas = Agenda.objects.select_related('medico').filter(dia__gte=today.date()).all()
-        agendas = values_gte_than(agendas, today.time())
+        agendas = values_gte_than(agendas, today)
         agenda_serialized = self.serializer_class(agendas, many=True)
         return JsonResponse(agenda_serialized.data, safe=False)
 
@@ -81,7 +86,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST, safe=False
             )
         agenda = Agenda.objects.filter(id=data.get("agenda_id"), dia__gte=today.date()).first()
-        agenda = values_gte_than([agenda], today.time())[0]
+        agenda = values_gte_than([agenda], today)[0]
         if not agenda and not agenda.horarios:
             return JsonResponse({
                 "Status": "Failed",
@@ -122,3 +127,63 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         agenda.save()
         appointment.delete()
         return JsonResponse("", safe=False)
+
+
+@csrf_exempt
+def signup(request):
+    if request.method != "POST":
+        return JsonResponse("", 
+                status=status.HTTP_405_METHOD_NOT_ALLOWED, safe=False
+            )
+    data = JSONParser().parse(request)
+    user = User.objects.create_user(username=data.get("username"), password=data.get("password"))
+    user.first_name = data.get("first_name", "")
+    user.last_name = data.get("last_name", "")
+    user.save()
+    return JsonResponse("", 
+                status=status.HTTP_200_OK, safe=False
+            )
+
+
+@csrf_exempt
+def signin(request):
+    if request.method != "POST":
+        return JsonResponse("", 
+                status=status.HTTP_405_METHOD_NOT_ALLOWED, safe=False
+            )
+    data = JSONParser().parse(request)
+    user = authenticate(username=data.get("username"), password=data.get("password"))
+    if not user:
+        return JsonResponse({
+                "Status": "Failed",
+                "Error": "Usuário inválido"}, 
+                status=status.HTTP_400_BAD_REQUEST, safe=False
+            )
+    login(request, user)
+    body = {
+        "username": data.get("username"),
+        "password": data.get("password")
+    } 
+    data = requests.post("http://127.0.0.1:8000/api-token-auth/", json=body)
+    data = data.json()
+    body["id"] = user.id
+    body["first_name"] = user.first_name
+    body["last_name"] = user.last_name
+    body["token"] = data["token"]
+    return JsonResponse(body, 
+                status=status.HTTP_200_OK, safe=False
+            )
+
+
+@csrf_exempt
+@login_required
+def signout(request):
+    if request.method != "POST":
+        return JsonResponse("", 
+                status=status.HTTP_405_METHOD_NOT_ALLOWED, safe=False
+            )
+    logout(request)
+    return JsonResponse({
+                "Status": "Success"}, 
+                status=status.HTTP_200_OK, safe=False
+            )
