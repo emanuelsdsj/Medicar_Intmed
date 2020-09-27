@@ -1,0 +1,49 @@
+﻿<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+         <div class="form-group col">
+            <label>Especialidade</label>
+            <div>
+                <select #especialidadeSelect (change)='onEspecialidadeSelected(especialidadeSelect.value)'>
+                    <option value="" selected disabled hidden>Escolha a especialidade</option>
+                    <option *ngFor="let x of especialidades" [value]="x.id" >{{x.nome}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group col">
+            <label>Médicos</label>
+            <div>
+                <select #medicosSelect (change)='onMedicoSelected(medicosSelect.value)'>
+                    <option value="" selected disabled hidden>Escolha o médico</option>
+                    <option *ngFor="let x of medicos" [value]="x.id">{{x.nome}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+         <div class="form-group col">
+            <label>Data</label>
+            <div >
+                <select #agendasSelect (change)='onAgendasSelected(agendasSelect.value)'>
+                    <option value="" selected disabled hidden>Escolha a data</option>
+                    <option *ngFor="let x of agendas" [value]="[x.id,x.horarios]">{{x.dia}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group col">
+            <label>Horários</label>
+            <div >
+                <select #horariosSelect (change)='onHorariosSelected(horariosSelect.value)'>
+                    <option value="" selected disabled hidden>Escolha o horário</option>
+                    <option *ngFor="let x of horarios" [value]="x">{{x}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <button [disabled]="loading" class="btn btn-primary">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            Save
+        </button>
+        <a routerLink="/users" class="btn btn-link">Cancel</a>
+    </div>
+</form>
