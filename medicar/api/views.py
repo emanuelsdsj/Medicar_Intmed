@@ -85,8 +85,8 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     def list(self, request):
         today = datetime.now()
         appointment = Consulta.objects.filter(usuario=request.user.id,
-                                              horario__gte=today.time(), 
                                               agenda__dia__gte=today.date()).all()
+        appointment = values_gte_than(appointment, today)
         appointment_serialized = self.serializer_class(appointment, many=True)
         return JsonResponse(appointment_serialized.data, safe=False)
 
@@ -121,6 +121,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             "horario": time,
             "usuario": request.user.id
         }
+        print(appointment_data)
         appointment_serialized = self.create_serializer_class(data=appointment_data)
         if appointment_serialized.is_valid():
             agenda.horarios.remove(time)
