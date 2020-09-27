@@ -1,5 +1,8 @@
-# angular-9-registration-login-example
+# medicar_panel
 
-Angular 9 - User Registration and Login Example
+MEDICAR PANEL is a adapted version of the tutorial for Angular 9
 
-Full tutorial with example available at https://jasonwatmore.com/post/2020/04/28/angular-9-user-registration-and-login-example-tutorial
+Full tutorial -> https://jasonwatmore.com/post/2020/04/28/angular-9-user-registration-and-login-example-tutorial
+
+# How to run
+ng serve
