@@ -40,11 +40,12 @@ class MedicViewSet(viewsets.ModelViewSet):
     def list(self, request):
         name_requested = request.query_params.get("search", "")
         specialties = request.query_params.getlist("especialidade", None)
+        kwargs = {
+            '{0}__{1}'.format('nome', 'contains'): name_requested
+        }
         if specialties:
-            medics = Medico.objects.filter(nome__contains=name_requested, 
-                                          especialidade__in=specialties).all()
-        else:
-            medics = Medico.objects.filter(nome__contains=name_requested).all()
+            kwargs['{0}__{1}'.format('especialidade', 'in')] = specialties
+        medics = Medico.objects.filter(**kwargs).all()
         medics_serialized = self.serializer_class(medics, many=True)
         return JsonResponse(medics_serialized.data, safe=False)
 
@@ -55,7 +56,21 @@ class AgendaViewSet(viewsets.ModelViewSet):
     
     def list(self, request):
         today = datetime.now()
-        agendas = Agenda.objects.select_related('medico').filter(dia__gte=today.date()).all()
+        medics = request.query_params.getlist("medico", None)
+        specialties = request.query_params.getlist("especialidade", None)
+        initial_date = request.query_params.get("data_inicio", None)
+        final_date = request.query_params.get("data_final", None)
+        kwargs = {
+            '{0}__{1}'.format('dia', 'gte'): today.date()
+        }
+        if specialties:
+            kwargs['{0}__{1}__{2}'.format('medico', 'especialidade', 'in')] = specialties
+        if medics:
+            kwargs['{0}__{1}'.format('medico', 'in')] = medics
+        if initial_date and final_date:
+            kwargs['{0}__{1}'.format('dia', 'range')] = (initial_date, final_date)
+        
+        agendas = Agenda.objects.select_related('medico').filter(**kwargs).order_by("dia").all()
         agendas = values_gte_than(agendas, today)
         agenda_serialized = self.serializer_class(agendas, many=True)
         return JsonResponse(agenda_serialized.data, safe=False)
@@ -78,7 +93,8 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     def create(self, request):
         today = datetime.now()
         data = JSONParser().parse(request)
-        time = datetime.strptime(data.get("horario"), "%H:%M").time()
+        print(data)
+        time = datetime.strptime(data.get("horario"), "%H:%M:%S").time()
         appointment = Consulta.objects.filter(agenda=data.get("agenda_id"), horario=time).first()
         if appointment:
             return JsonResponse({
