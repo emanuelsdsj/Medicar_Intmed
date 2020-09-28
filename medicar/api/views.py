@@ -84,8 +84,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     
     def list(self, request):
         today = datetime.now()
-        appointment = Consulta.objects.filter(usuario=request.user.id,
-                                              agenda__dia__gte=today.date()).all()
+        appointment = Consulta.objects.filter(
+            usuario=request.user.id,
+            agenda__dia__gte=today.date()
+        ).order_by("agenda__dia").order_by("horario").all()
         appointment = values_gte_than(appointment, today)
         appointment_serialized = self.serializer_class(appointment, many=True)
         return JsonResponse(appointment_serialized.data, safe=False)
