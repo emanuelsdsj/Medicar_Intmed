@@ -4,7 +4,8 @@ The objective of this project is to answer the test of the company Intmed -> htt
 ### How to run
 - Create a table and a user in postgresql
 - edit settings.py
-- source medicar-venv/bin/activate or create your venv and run pip install -r requirements.txt
+- source medicar-venv/bin/activate or create your venv
+- pip install -r requirements.txt
 - python3 manage.py makemigrations
 - python3 manage.py migrate
 - python3 manage.py populate_db
