@@ -1,22 +1,22 @@
-﻿<h1>Consultas</h1>
+﻿<h1>Medicar</h1>
 <a routerLink="add" class="btn btn-sm btn-success mb-2">Marcar Consulta</a>
 <table class="table table-striped">
     <thead>
         <tr>
-            <th style="width: 30%">Nome do médico</th>
-            <th style="width: 30%">Especialidade</th>
+        <th style="width: 30%">ESPECIALIDADE</th>
+            <th style="width: 30%">PROFISSIONAL</th>
             <th style="width: 30%">Data</th>
             <th style="width: 10%"></th>
         </tr>
     </thead>
     <tbody>
         <tr *ngFor="let consulta of consultas">
-            <td>{{consulta.medico.nome}}</td>
             <td>{{consulta.medico.especialidade.nome}}</td>
+            <td>{{consulta.medico.nome}}</td>
             <td>{{consulta.dia}} - {{consulta.horario}}</td>
              <td style="white-space: nowrap">
-                <button (click)="deleteAppointment(consulta.id)" class="btn btn-sm btn-danger btn-delete-user">
-                    <span>Delete</span>
+                <button (click)="deleteAppointment(consulta.id)" class="btn btn-sm btn-danger btn-delete-consulta">
+                    <span>Desmarcar</span>
                 </button>
             </td>
         </tr>
