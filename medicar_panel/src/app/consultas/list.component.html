@@ -3,17 +3,18 @@
 <table class="table table-striped">
     <thead>
         <tr>
-        <th style="width: 30%">ESPECIALIDADE</th>
-            <th style="width: 30%">PROFISSIONAL</th>
-            <th style="width: 30%">Data</th>
-            <th style="width: 10%"></th>
+        <th style="width: 25%">ESPECIALIDADE</th>
+            <th style="width: 25%">PROFISSIONAL</th>
+            <th style="width: 25%">Data</th>
+            <th style="width: 25%">Hora</th>
         </tr>
     </thead>
     <tbody>
         <tr *ngFor="let consulta of consultas">
             <td>{{consulta.medico.especialidade.nome}}</td>
             <td>{{consulta.medico.nome}}</td>
-            <td>{{consulta.dia}} - {{consulta.horario}}</td>
+            <td>{{consulta.dia}}</td>
+            <td>{{consulta.horario}}</td>
              <td style="white-space: nowrap">
                 <button (click)="deleteAppointment(consulta.id)" class="btn btn-sm btn-danger btn-delete-consulta">
                     <span>Desmarcar</span>
