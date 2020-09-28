@@ -18,9 +18,7 @@ export class ListComponent implements OnInit {
             .subscribe(consultas => this.consultas = consultas);
     }
 
-    deleteUser(id: string) {
-        const consulta = this.consultas.find(x => x.id === id);
-        consulta.isDeleting = true;
+    deleteAppointment(id) {
         this.accountService.delete(id)
             .pipe(first())
             .subscribe(() => {
